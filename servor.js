@@ -4,6 +4,30 @@ const fs = require('fs')
 const url = require('url')
 const path = require('path')
 const http = require('http')
+const clor = require('clor');
+const tinydate = require('tinydate');
+
+function stamp() {
+  let i = 0;
+  const args = new Array(arguments.length);
+  for (; i < args.length; ++i) {
+    args[i] = arguments[i];
+  }
+
+  let stamp = tinydate('[{HH}:{mm}:{ss}]');
+  let Datess = new Date();
+
+  process.stdout.write(clor['magenta'](stamp(Datess)) + ' ');
+  console[this.method].apply(console, (this.custom ? [this.custom].concat(args) : args));
+}
+
+function log() {
+  stamp.apply({
+    method: 'log',
+    color: 'magenta'
+  }, arguments);
+  return this;
+}
 
 // ----------------------------------
 // Generate map of all known mimetypes
@@ -25,7 +49,7 @@ const cwd = process.cwd();
 const sendError = (res, resource, status) => {
   res.writeHead(status)
   res.end()
-  console.log(' \x1b[41m', status, '\x1b[0m', `${resource}`)
+  log(`Error ${clor.red.bold(resource)}`)
 }
 
 const sendFile = (res, resource, status, file, ext) => {
@@ -35,7 +59,7 @@ const sendFile = (res, resource, status, file, ext) => {
   })
   res.write(file, 'binary')
   res.end()
-  console.log(' \x1b[42m', status, '\x1b[0m', `${resource}`)
+  log(`Reloading ${clor.green.bold(resource)}`)
 }
 
 const sendMessage = (res, channel, data) => {
@@ -107,7 +131,6 @@ const start = options => {
       const resource = isRoute ? `/${fallback}` : decodeURI(pathname)
       const uri = path.join(cwd, root, resource)
       const ext = uri.replace(/^.*[\.\/\\]/, '').toLowerCase()
-      isRoute && console.log('\n \x1b[44m', 'RELOADING', '\x1b[0m\n')
       // Check if files exists at the location
       fs.stat(uri, (err, stat) => {
         if (err) return sendError(res, resource, 404)
