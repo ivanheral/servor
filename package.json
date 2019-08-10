@@ -19,9 +19,5 @@
     "start": "node servor"
   },
   "author": "Luke Jackson <lukejacksonn@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "clor": "^7.0.0",
-    "tinydate": "^1.2.0"
-  }
+  "license": "MIT"
 }
